@@ -22,8 +22,7 @@ st.title("原鄉部落座標與資訊")
 m = leafmap.Map(center=[23.97565, 120.9738819], zoom=4)
 
 # Load the tribes data
-tribes = "https://github.com/8048-kh/test02/blob/main/old_tribe.csv"
-tribes_df = pd.read_csv(tribes, sep=';', encoding='utf-8')
+tribes = "https://github.com/8048-kh/test02/raw/refs/heads/main/old_tribe.csv"
 tribes_df = pd.read_csv(tribes)
 tribe_names = tribes_df['N_Tribe'].tolist()
 
