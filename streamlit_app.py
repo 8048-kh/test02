@@ -109,7 +109,7 @@ if not o_tribe_data.empty:
     unique_o_tribe_names = sorted(list(set(o_tribe_names_list)))
     
     if unique_o_tribe_names:
-        st.subheader(f"📌 {selected_tribe} 隸屬的子部落 (O_Tribe) 列表") 
+        st.subheader(f"📌 {selected_tribe} 居民原居地：") 
         st.info("、".join(unique_o_tribe_names))
     
 else:
