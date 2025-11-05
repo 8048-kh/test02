@@ -119,5 +119,6 @@ else:
 
 
 # Display the map
-m.to_streamlit(height=700)
 m.set_center(n_lon, n_lat, zoom=13)
+m.to_streamlit(height=700)
+
