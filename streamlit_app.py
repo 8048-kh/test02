@@ -22,14 +22,27 @@ O_LAT_COL = 'OT_lat'
 O_LON_COL = 'OT_lon'
 O_NAME_COL = 'O_Tribe'
 
+# Leafmap map object initialization 確保 m 始終被定義
+m = leafmap.Map(center=[23.97565, 120.9738819], zoom=7)
+
 # Load the tribes data
 tribes = "https://github.com/8048-kh/test02/raw/refs/heads/main/tribe.csv"
 try:
     tribes_df = pd.read_csv(tribes)
-except Exception as e:
-    st.error(f"無法載入部落資料：{e}")
-    st.stop() # 停止執行，避免後續錯誤
+    
+    # Add shapefile layer - 提前處理，避免被 try/except 區塊影響
+    try:
+        m.add_shp("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Full_Nantou_Tribe.shp")
+    except Exception as e:
+        st.warning(f"無法載入 Shapefile 圖層: {e}")
 
+except Exception as e:
+    # 如果資料載入失敗，顯示錯誤信息，顯示地圖（可能是空圖），然後停止執行
+    st.error(f"無法載入部落資料，應用程式無法繼續：{e}")
+    m.to_streamlit(height=700)
+    st.stop() 
+
+# 確保程式碼只有在 tribes_df 成功載入後才會繼續執行
 tribe_names = tribes_df['N_Tribe'].dropna().unique().tolist()
 tribe_names.sort()
 
@@ -41,21 +54,11 @@ selected_tribe = st.selectbox(
 # Filter data
 selected_data = tribes_df[tribes_df['N_Tribe'] == selected_tribe].copy()
 
-# Leafmap map object initialization (使用台灣中心點)
-m = leafmap.Map(center=[23.97565, 120.9738819], zoom=7)
-
-# Add shapefile layer
-try:
-    m.add_shp("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Full_Nantou_Tribe.shp")
-except Exception as e:
-    st.warning(f"無法載入 Shapefile 圖層: {e}")
-
 # 初始化座標
 n_lat, n_lon = None, None
 
 # --- 1. Mark Main Tribe (N_Tribe) ---
 if N_LAT_COL in selected_data.columns and N_LON_COL in selected_data.columns and not selected_data.empty:
-    # 取用該 N_Tribe 記錄的第一組 NT_lat/NT_lon 作為主要座標
     n_lat = selected_data[N_LAT_COL].iloc[0]
     n_lon = selected_data[N_LON_COL].iloc[0]
 
@@ -69,8 +72,8 @@ if N_LAT_COL in selected_data.columns and N_LON_COL in selected_data.columns and
         icon=main_icon
     )
 
-    # Set map center
-    m.set_center(n_lon, n_lat, zoom=13)
+    # *** 🚀 核心修改點：將縮放級別從 13 提高到 15 🚀 ***
+    m.set_center(n_lon, n_lat, zoom=15)
 
 # --- 2. Mark Sub Tribes (O_Tribe) ---
 
@@ -103,22 +106,18 @@ if not o_tribe_data.empty:
             o_tribe_names_list.append(o_name)
 
     # --- 3. List O_Tribe Names ---
-    # 使用 set 進行去重並排序
     unique_o_tribe_names = sorted(list(set(o_tribe_names_list)))
     
     if unique_o_tribe_names:
-        st.subheader(f"📌 {selected_tribe} 隸屬的子部落 (O_Tribe) 列表") # 將 {selected_tribe} 加入標題
+        st.subheader(f"📌 {selected_tribe} 隸屬的子部落 (O_Tribe) 列表") 
         st.info("、".join(unique_o_tribe_names))
     
 else:
     # 顯示主要部落資訊，如果沒有子部落資料
     st.subheader(f"📌 {selected_tribe} 主要資訊 (無子部落紀錄)")
     if not selected_data.empty:
-        # 只顯示第一行的轉置資訊，更簡潔
         st.dataframe(selected_data.head(1).T.fillna('-'))
 
 
 # Display the map
-m.set_center(N_LON_COL, N_LAT_COL, zoom=13)
 m.to_streamlit(height=700)
-
