@@ -106,7 +106,7 @@ else:
     longitude = selected_tribe_data['NT_lon']
     
     # 設置中心點並放大
-    m.set_center(longitude, latitude, zoom=15) 
+    m.set_center(longitude, latitude, zoom=15)
     
     # 添加單一主要部落標記
     m.add_marker(location=(latitude,longitude), tooltip=selected_tribe, popup=f"🌟 主要部落：{selected_tribe}")
