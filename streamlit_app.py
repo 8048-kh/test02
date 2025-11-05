@@ -46,6 +46,6 @@ st.markdown(markdown)
 
 #m = leafmap.Map(center=[23.932630, 120.986852], zoom=10)
 #tribes = "https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Nantou_Tribe.csv"
-tribes_df = pd.read_csv("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Nantou_Tribe.csv")
-st.header("部落名稱")
-st.table(tribes_df[["tribe name"]])
+#tribes_df = pd.read_csv("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Nantou_Tribe.csv")
+#st.header("部落名稱")
+#st.table(tribes_df[["tribe name"]])
