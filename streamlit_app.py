@@ -42,7 +42,7 @@ selected_tribe = st.selectbox(
 selected_data = tribes_df[tribes_df['N_Tribe'] == selected_tribe].copy()
 
 # Leafmap map object initialization (使用台灣中心點)
-#m = leafmap.Map(center=[23.97565, 120.9738819], zoom=7)
+m = leafmap.Map(center=[23.97565, 120.9738819], zoom=7)
 
 # Add shapefile layer
 try:
@@ -119,6 +119,6 @@ else:
 
 
 # Display the map
-m.set_center(n_lon, n_lat, zoom=13)
+m.set_center(NT_lon, NT_lat, zoom=13)
 m.to_streamlit(height=700)
 
