@@ -50,10 +50,6 @@ try:
 except Exception as e:
     st.warning(f"無法載入 Shapefile 圖層: {e}")
 
-# 刪除的部分：
-# st.header(f"探索 {selected_tribe} 🗺️")
-# st.write(f"您選擇的主要部落是：**{selected_tribe}**")
-
 # 初始化座標
 n_lat, n_lon = None, None
 
@@ -124,3 +120,4 @@ else:
 
 # Display the map
 m.to_streamlit(height=700)
+m.set_center(n_lon, n_lat, zoom=13)
