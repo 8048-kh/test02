@@ -68,7 +68,7 @@ if N_LAT_COL in selected_data.columns and N_LON_COL in selected_data.columns and
     m.add_marker(
         location=(n_lat, n_lon),
         tooltip=f"{selected_tribe}",
-        popup=f"**{selected_tribe}**<br>經度: {n_lon:.4f}<br>緯度: {n_lat:.4f}",
+        popup=f"{selected_tribe}<br>經度: {n_lon:.4f}<br>緯度: {n_lat:.4f}",
         icon=main_icon
     )
     m.set_center(n_lon, n_lat, zoom=15)
@@ -97,8 +97,8 @@ if not o_tribe_data.empty:
         if o_name and not is_main_location:
             m.add_marker(
                 location=(o_lat, o_lon),
-                tooltip=f"子部落: {o_name}",
-                popup=f"📍 子部落：{o_name}<br>經度: {o_lon:.4f}<br>緯度: {o_lat:.4f}",
+                tooltip=f"{o_name}",
+                popup=f"{o_name}<br>經度: {o_lon:.4f}<br>緯度: {o_lat:.4f}",
                 icon=sub_icon
             )
             o_tribe_names_list.append(o_name)
