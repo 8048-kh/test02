@@ -13,21 +13,7 @@ import folium
 
 st.set_page_config(layout="wide")
 
-st.title("原鄉部落座標與資訊")
-
-# Leafmap map object initialization
-m = leafmap.Map(center=[23.97565, 120.9738819], zoom=4)
-
-# Load the tribes data
-tribes = "https://github.com/8048-kh/test02/raw/refs/heads/main/tribe.csv"
-tribes_df = pd.read_csv(tribes)
-tribe_names = tribes_df['N_Tribe'].dropna().unique().tolist()
-tribe_names.sort()
-
-# Streamlit interface
-selected_tribe = st.selectbox(
-    "選擇主要部落 (N_Tribe)", tribe_names, key="selectbox_tribe"
-)
+st.title("原鄉部落座標與資訊 📍")
 
 # Assumed column names
 N_LAT_COL = 'NT_lat'
@@ -36,19 +22,45 @@ O_LAT_COL = 'OT_lat'
 O_LON_COL = 'OT_lon'
 O_NAME_COL = 'O_Tribe'
 
+# Load the tribes data
+tribes = "https://github.com/8048-kh/test02/raw/refs/heads/main/tribe.csv"
+try:
+    tribes_df = pd.read_csv(tribes)
+except Exception as e:
+    st.error(f"無法載入部落資料：{e}")
+    st.stop() # 停止執行，避免後續錯誤
+
+tribe_names = tribes_df['N_Tribe'].dropna().unique().tolist()
+tribe_names.sort()
+
+# Streamlit interface
+selected_tribe = st.selectbox(
+    "選擇主要部落 (N_Tribe)", tribe_names, key="selectbox_tribe"
+)
+
 # Filter data
 selected_data = tribes_df[tribes_df['N_Tribe'] == selected_tribe].copy()
 
-# Add shapefile layer
-m.add_shp("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Full_Nantou_Tribe.shp")
+# Leafmap map object initialization (使用台灣中心點)
+m = leafmap.Map(center=[23.97565, 120.9738819], zoom=7)
 
-st.header(f"探索 {selected_tribe}")
+# Add shapefile layer
+try:
+    m.add_shp("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Full_Nantou_Tribe.shp")
+except Exception as e:
+    st.warning(f"無法載入 Shapefile 圖層: {e}")
+
+st.header(f"探索 {selected_tribe} 🗺️")
+st.write(f"您選擇的主要部落是：**{selected_tribe}**")
+
+# 初始化座標
+n_lat, n_lon = None, None
 
 # --- 1. Mark Main Tribe (N_Tribe) ---
 if N_LAT_COL in selected_data.columns and N_LON_COL in selected_data.columns and not selected_data.empty:
-    main_tribe_data = selected_data.iloc[0]
-    n_lat = main_tribe_data[N_LAT_COL]
-    n_lon = main_tribe_data[N_LON_COL]
+    # 取用該 N_Tribe 記錄的第一組 NT_lat/NT_lon 作為主要座標
+    n_lat = selected_data[N_LAT_COL].iloc[0]
+    n_lon = selected_data[N_LON_COL].iloc[0]
 
     # Blue Star Icon for Main Tribe
     main_icon = folium.Icon(color='blue', icon='star', prefix='fa')
@@ -62,22 +74,17 @@ if N_LAT_COL in selected_data.columns and N_LON_COL in selected_data.columns and
 
     # Set map center
     m.set_center(n_lon, n_lat, zoom=13)
-else:
-    n_lat, n_lon = None, None # Fallback
-
-st.write(f"您選擇的主要部落是：**{selected_tribe}**")
 
 # --- 2. Mark Sub Tribes (O_Tribe) ---
 
-# Filter sub-tribe data
+# 過濾出有子部落名稱和座標的行
 o_tribe_data = selected_data.dropna(subset=[O_NAME_COL, O_LAT_COL, O_LON_COL])
+o_tribe_names_list = []
 
 if not o_tribe_data.empty:
     
     # Purple Pin Icon for Sub Tribes
     sub_icon = folium.Icon(color='purple', icon='map-pin', prefix='fa')
-
-    o_tribe_names_list = []
     
     # Iterate and add markers for O_Tribe
     for index, row in o_tribe_data.iterrows():
@@ -85,9 +92,10 @@ if not o_tribe_data.empty:
         o_lon = row[O_LON_COL]
         o_name = row[O_NAME_COL]
 
-        # Check if the location is approximately the same as the main tribe
+        # 檢查子部落座標是否與主要部落座標幾乎相同
         is_main_location = (n_lat is not None and abs(o_lat - n_lat) < 0.0001 and abs(o_lon - n_lon) < 0.0001)
         
+        # 僅標記名稱存在且與主要部落位置不同的子部落
         if o_name and not is_main_location:
             m.add_marker(
                 location=(o_lat, o_lon),
@@ -97,25 +105,26 @@ if not o_tribe_data.empty:
             )
             o_tribe_names_list.append(o_name)
 
-    # --- 3. List O_Tribe Names and Display Data ---
-    unique_o_tribe_names = pd.Series(o_tribe_names_list).unique().tolist()
+    # --- 3. List O_Tribe Names ---
+    # 使用 set 進行去重並排序
+    unique_o_tribe_names = sorted(list(set(o_tribe_names_list)))
     
     if unique_o_tribe_names:
         st.subheader("📌 隸屬的子部落 (O_Tribe) 列表")
         st.info("、".join(unique_o_tribe_names))
     
-    st.subheader(f"「{selected_tribe}」所有地點資訊")
-    
-    default_cols = [N_LAT_COL, N_LON_COL, O_NAME_COL, O_LAT_COL, O_LON_COL]
-    display_cols = [col for col in selected_data.columns if col in ['N_Tribe'] + default_cols]
-
-    st.dataframe(selected_data[display_cols].fillna('-'))
+    # 刪除的程式碼塊在這邊：
+    # st.subheader(f"「{selected_tribe}」所有地點資訊")
+    # default_cols = ['N_Tribe', N_LAT_COL, N_LON_COL, O_NAME_COL, O_LAT_COL, O_LON_COL]
+    # display_cols = [col for col in default_cols if col in selected_data.columns]
+    # st.dataframe(selected_data[display_cols].fillna('-'))
     
 else:
-    # Display main tribe info if no sub-tribe data is available
-    st.subheader(f"「{selected_tribe}」主要資訊")
+    # 顯示主要部落資訊，如果沒有子部落資料
+    st.subheader(f"「{selected_tribe}」主要資訊 (無子部落紀錄)")
     if not selected_data.empty:
-        st.dataframe(selected_data.head(1).T)
+        # 只顯示第一行的轉置資訊，更簡潔
+        st.dataframe(selected_data.head(1).T.fillna('-'))
 
 
 # Display the map
