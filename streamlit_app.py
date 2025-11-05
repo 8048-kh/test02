@@ -48,7 +48,7 @@ tribe_names.sort()
 
 # Streamlit interface
 selected_tribe = st.selectbox(
-    "選擇主要部落 (N_Tribe)", tribe_names, key="selectbox_tribe"
+    "選擇部落 (N_Tribe)", tribe_names, key="selectbox_tribe"
 )
 
 # Filter data
