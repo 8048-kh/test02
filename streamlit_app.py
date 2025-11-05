@@ -67,12 +67,10 @@ if N_LAT_COL in selected_data.columns and N_LON_COL in selected_data.columns and
 
     m.add_marker(
         location=(n_lat, n_lon),
-        tooltip=f"主要部落: {selected_tribe}",
-        popup=f"**🌟 主要部落：{selected_tribe}**<br>經度: {n_lon:.4f}<br>緯度: {n_lat:.4f}",
+        tooltip=f"{selected_tribe}",
+        popup=f"**{selected_tribe}**<br>經度: {n_lon:.4f}<br>緯度: {n_lat:.4f}",
         icon=main_icon
     )
-
-    # *** 🚀 核心修改點：將縮放級別從 13 提高到 15 🚀 ***
     m.set_center(n_lon, n_lat, zoom=15)
 
 # --- 2. Mark Sub Tribes (O_Tribe) ---
