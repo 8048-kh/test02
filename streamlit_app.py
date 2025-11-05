@@ -36,8 +36,8 @@ selected_tribe = st.selectbox(
 selected_tribe_data = tribes_df[tribes_df['tribe name'] == selected_tribe].iloc[0]
 
 # Get coordinates from 'latitude' and 'longitude'
-latitude = selected_tribe_data['latitude']
-longitude = selected_tribe_data['longitude']
+latitude = selected_tribe_data['NT_lat']
+longitude = selected_tribe_data['NT_lon']
 m.add_shp("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Full_Nantou_Tribe.shp")
 # Recenter and zoom to the selected tribe
 m.set_center(longitude, latitude, zoom=15) 
