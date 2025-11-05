@@ -50,8 +50,9 @@ try:
 except Exception as e:
     st.warning(f"無法載入 Shapefile 圖層: {e}")
 
-st.header(f"探索 {selected_tribe} 🗺️")
-st.write(f"您選擇的主要部落是：**{selected_tribe}**")
+# 刪除的部分：
+# st.header(f"探索 {selected_tribe} 🗺️")
+# st.write(f"您選擇的主要部落是：**{selected_tribe}**")
 
 # 初始化座標
 n_lat, n_lon = None, None
@@ -110,18 +111,12 @@ if not o_tribe_data.empty:
     unique_o_tribe_names = sorted(list(set(o_tribe_names_list)))
     
     if unique_o_tribe_names:
-        st.subheader("📌 隸屬的子部落 (O_Tribe) 列表")
+        st.subheader(f"📌 {selected_tribe} 隸屬的子部落 (O_Tribe) 列表") # 將 {selected_tribe} 加入標題
         st.info("、".join(unique_o_tribe_names))
-    
-    # 刪除的程式碼塊在這邊：
-    # st.subheader(f"「{selected_tribe}」所有地點資訊")
-    # default_cols = ['N_Tribe', N_LAT_COL, N_LON_COL, O_NAME_COL, O_LAT_COL, O_LON_COL]
-    # display_cols = [col for col in default_cols if col in selected_data.columns]
-    # st.dataframe(selected_data[display_cols].fillna('-'))
     
 else:
     # 顯示主要部落資訊，如果沒有子部落資料
-    st.subheader(f"「{selected_tribe}」主要資訊 (無子部落紀錄)")
+    st.subheader(f"📌 {selected_tribe} 主要資訊 (無子部落紀錄)")
     if not selected_data.empty:
         # 只顯示第一行的轉置資訊，更簡潔
         st.dataframe(selected_data.head(1).T.fillna('-'))
