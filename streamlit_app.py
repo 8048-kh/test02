@@ -25,7 +25,7 @@ try:
     
     # Add shapefile layer - 提前處理，避免被 try/except 區塊影響
     try:
-        m.add_shp("https://github.com/8048-kh/Debris-rep/raw/refs/heads/master/Data/Full_Nantou_Tribe.shp")
+        m.add_shp(https://github.com/8048-kh/test02/raw/refs/heads/main/tribe.shp)
     except Exception as e:
         st.warning(f"無法載入 Shapefile 圖層: {e}")
 
