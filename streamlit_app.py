@@ -19,9 +19,9 @@ O_NAME_COL = 'O_Tribe'
 m = leafmap.Map(center=[23.97565, 120.9738819], zoom=7)
 
 # Load the tribes data
-tribes = "https://github.com/8048-kh/test02/raw/refs/heads/main/Result.csv"
+tribes = "https://github.com/8048-kh/test02/raw/refs/heads/main/T_Result.csv"
 try:
-    tribes_df = pd.read_csv(Result)
+    tribes_df = pd.read_csv(T_Result)
     
     # Add shapefile layer - 提前處理，避免被 try/except 區塊影響
     try:
